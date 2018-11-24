@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+
+<!-- NEEDS WORK:
+- the dots switch from before to after but it can only be switched once (try it so you can see)
+- the graph needs a title, axis needs labels
+- turned out to be simpler than I thought it would be so if you want to add something to make it more complex feel free to
+
+NOTES:
+- When you load the page it will be the BEFORE graph
+- BEFORE graph is xaxis -> yaxis->
+- AFTER graph is xaxis -> yaxis ->
+- Points are light shade of red (that way if they stack it appears more opaque)
+- Points outline is GREEN if its private school, BLUE if its public
+- If you have any other ideas in terms of coloring feel free to explore that 
+
+Anything else, feel free to message me! -->
+
+<html>
+
+<head>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <!-- <script type="text/javascript" src="./js/main.js"></script> -->
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+    <button>Before/After Switch</button>
+
+    <div id="main">
+        <svg id="svg1" width="1200" height="600" style="border: 1px solid #777;">
+        </svg>
+    </div>
+
+    <script type="text/javascript">
+
+        d3.csv("data/colleges.csv", function (error, data) {
+            if (error) throw error;
+
+            var collegesBefore = [];
+            for (var i = 0; i < data.length; i++) {
+                collegesBefore.push([Number(data[i].MedianFamilyIncome), Number(data[i].AverageCost), data[i].Name, data[i].Control]);
+            }
+            //console.log(collegesBefore);
+
+            /* Setting up canvas */
+            var canvasWidth = 1200;
+            var canvasHeight = 600;
+            var padding = 60;
+
+            /* Setting up scaling */
+            var xScale = d3.scale.linear()
+                .domain([0, d3.max(collegesBefore, function (d) {
+                    return d[0];  // input - 0 for x and 1 for y
+                })])
+                .range([padding, canvasWidth - padding * 2]); // output range
+
+            var yScale = d3.scale.linear()
+                .domain([0, d3.max(collegesBefore, function (d) {
+                    return d[1];  // input - 0 for x and 1 for y
+                })])
+                .range([canvasHeight - padding, padding]);  // y starts on top going down so we gotta flip
+
+            /* Setting up X and Y axis */
+            var xAxis = d3.svg.axis()
+                .scale(xScale)
+                .orient("bottom")
+                .ticks(10);
+
+            var yAxis = d3.svg.axis()
+                .scale(yScale)
+                .orient("left")
+                .ticks(5);
+
+            /* Creating SVG element */
+            var svg = d3.select("svg")
+                .append("svg")
+                .attr("width", canvasWidth)
+                .attr("height", canvasHeight)
+
+            /* Creating the point circles */
+            svg.selectAll("circle")
+                .data(collegesBefore)
+                .enter()
+                .append("circle")
+                .attr("cx", function (d) {
+                    return xScale(d[0]);  // Circle's X
+                })
+                .attr("cy", function (d) {  // Circle's Y
+                    return yScale(d[1]);
+                })
+                .attr("fill", "rgba(127, 179, 213,0.3)")
+                .attr("stroke", function (d) {
+                    console.log(d);
+                    if (d[3] == "Private")
+                        return "rgba(0,255,0,0.3)";
+                    return "rgba(0,0,255,0.3)";
+                })
+                .attr("r", 4);  // adjust point size (radius)
+
+            /* Adding to the Axis */
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + (canvasHeight - padding) + ")")
+                .call(xAxis);
+
+            svg.append("g")
+                .attr("class", "y axis")
+                .attr("transform", "translate(" + padding + ",0)")
+                .call(yAxis);
+
+            /* Click -> switch data to collegesAfter data */
+            d3.select("button")
+                .on("click", function () {
+                    var collegesAfter = [];
+                    for (var i = 0; i < data.length; i++) {
+                        collegesAfter.push([Number(data[i].MedianDebtonGraduation), Number(data[i].MedianEarnings8yearsAfterEntry)]);
+                    }
+                    //console.log(collegesAfter);
+
+                    /* Update scaling */
+                    xScale.domain([0, d3.max(collegesAfter, function (d) {
+                        return d[0];
+                    })]);
+                    yScale.domain([0, d3.max(collegesAfter, function (d) {
+                        return d[1];
+                    })]);
+
+                    /* Updating the points */
+                    svg.selectAll("circle")
+                        .data(collegesAfter)  // Update with new data
+                        .transition()  // Transition from old to new
+                        .duration(1200)  // Length of animation
+                        .each("start", function () {  // Start of animation
+                            d3.select(this)
+                                .attr("fill", 'rgba(127, 179, 213,1)')  // Change color
+                                .attr("r", 8);  // Change size
+                        })
+                        .delay(function (d, i) {
+                            return i / collegesAfter.length * 900;  // adjust the delay per dot -- there's a slight delay b/n pts
+                        })
+                        .ease("linear")  // Transition effects -> 'circle', 'elastic', 'bounce', 'linear'
+                        .attr("cx", function (d) {
+                            return xScale(d[0]);
+                        })
+                        .attr("cy", function (d) {
+                            return yScale(d[1]);
+                        })
+                        .each("end", function () {  // End of animation
+                            d3.select(this)
+                                .transition()
+                                .duration(500)
+                                .attr("fill", "rgba(127, 179, 213,0.3)")  // Change color
+                                .attr("r", 4);  // Change radius
+                        });
+
+                    /* Updating Axis */
+                    svg.select(".x.axis")
+                        .transition()
+                        .duration(1000)
+                        .call(xAxis);
+
+                    svg.select(".y.axis")
+                        .transition()
+                        .duration(100)
+                        .call(yAxis);
+                });
+        })
+
+    </script>
+</body>
+
+</html>
