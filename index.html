@@ -38,6 +38,9 @@ Anything else, feel free to message me! -->
 
         d3.csv("data/colleges.csv", function (error, data) {
             if (error) throw error;
+            var div = d3.select("body").append("div")   
+                .attr("class", "tooltip")               
+                .style("opacity", 0);
 
             var collegesBefore = [];
             for (var i = 0; i < data.length; i++) {
@@ -98,14 +101,33 @@ Anything else, feel free to message me! -->
                 .attr("cy", function (d) {  // Circle's Y
                     return yScale(d[1]);
                 })
-                .attr("fill", "rgba(127, 179, 213,0.3)")
-                .attr("stroke", function (d) {
+                // .attr("fill", "rgba(127, 179, 213,0.3)")
+                .attr("fill", function (d) {
                     // console.log(d);
                     if (d[3] == "Private")
                         return "rgba(0,255,0,0.3)";
                     return "rgba(0,0,255,0.3)";
                 })
-                .attr("r", 4);  // adjust point size (radius)
+                .attr("stroke", function (d) {
+                    // console.log(d);
+                    if (d[3] == "Private")
+                        return "rgba(0,255,0,1)";
+                    return "rgba(0,0,255,1)";
+                })
+                .attr("r", 4)
+                .on("mouseover", function(d) {      
+                    div.transition()        
+                        .duration(200)      
+                        .style("opacity", .9);      
+                    div .html(d[2] + "<br/>")  
+                        .style("left", (d3.event.pageX) + "px")     
+                        .style("top", (d3.event.pageY - div.node().getBoundingClientRect().height) + "px");    
+                })                  
+        .on("mouseout", function(d) {       
+            div.transition()        
+                .duration(500)      
+                .style("opacity", 0);   
+        });;  // adjust point size (radius)
 
             /* Adding to the Axis */
             svg.append("g")
@@ -126,13 +148,13 @@ Anything else, feel free to message me! -->
 
                     if (title.text() == 'After') {
                         for (var i = 0; i < data.length; i++) {
-                            collegesChange.push([Number(data[i].MedianFamilyIncome), Number(data[i].AverageCost)]);
+                            collegesChange.push([Number(data[i].MedianFamilyIncome), Number(data[i].AverageCost),data[i].Name, data[i].Control]);
                         }
                         title.text('Before')
                     }
                     else {
                         for (var i = 0; i < data.length; i++) {
-                            collegesChange.push([Number(data[i].MedianDebtonGraduation), Number(data[i].MedianEarnings8yearsAfterEntry)]);
+                            collegesChange.push([Number(data[i].MedianDebtonGraduation), Number(data[i].MedianEarnings8yearsAfterEntry),data[i].Name, data[i].Control] );
                         }
                         title.text('After')
                     }
@@ -153,7 +175,7 @@ Anything else, feel free to message me! -->
                         .duration(1200)  // Length of animation
                         .each("start", function () {  // Start of animation
                             d3.select(this)
-                                .attr("fill", 'rgba(127, 179, 213,1)')  // Change color
+                                // .attr("fill", 'rgba(127, 179, 213,1)')  // Change color
                                 .attr("r", 8);  // Change size
                         })
                         .delay(function (d, i) {
@@ -170,7 +192,7 @@ Anything else, feel free to message me! -->
                             d3.select(this)
                                 .transition()
                                 .duration(500)
-                                .attr("fill", "rgba(127, 179, 213,0.3)")  // Change color
+                                // .attr("fill", "black")  // Change color
                                 .attr("r", 4);  // Change radius
                         });
 

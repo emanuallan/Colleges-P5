@@ -1,0 +1,7 @@
+Brushing
+    - Average Race Distribution (Pie Chart)
+    - Stacked Bar Chart Y- Number of instances, X- Region, Color- Locale
+Clicking
+    - Display Raw Data
+Hovering
+    - Dispaly College Name
