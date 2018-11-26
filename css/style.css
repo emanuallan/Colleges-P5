@@ -52,12 +52,14 @@
         cursor:pointer;
         transition:800ms ease all;
         outline:none;
-        margin:15px;
+        margin:10px;
       }
+
       button:hover{
         background:#F2EFEA;
         color:#00272B;
       }
+      
       button:before,button:after{
         content:'';
         position:absolute;
