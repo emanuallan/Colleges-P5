@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 
 <!-- NEEDS WORK:
-- the dots switch from before to after but it can only be switched once (try it so you can see)
-- the graph needs a title, axis needs labels
+- the dots switch from before to after but it can only be switched once (try it so you can see) *Solved
+- the graph needs a title *Solved, axis needs labels *Still needs work
 - turned out to be simpler than I thought it would be so if you want to add something to make it more complex feel free to
     - maybe some data appears when you click a point
     - or brushing and linking with some other quick and simple graph
@@ -80,6 +80,13 @@ Anything else, feel free to message me! -->
                 .attr("width", canvasWidth)
                 .attr("height", canvasHeight)
 
+            svg.append("text")
+                .attr("x", canvasWidth / 2)             
+                .attr("y", 20)
+                .attr("text-anchor", "middle")
+                .attr("class", "title")   
+                .text("Before");
+
             /* Creating the point circles */
             svg.selectAll("circle")
                 .data(collegesBefore)
@@ -93,7 +100,7 @@ Anything else, feel free to message me! -->
                 })
                 .attr("fill", "rgba(127, 179, 213,0.3)")
                 .attr("stroke", function (d) {
-                    console.log(d);
+                    // console.log(d);
                     if (d[3] == "Private")
                         return "rgba(0,255,0,0.3)";
                     return "rgba(0,0,255,0.3)";
@@ -114,23 +121,34 @@ Anything else, feel free to message me! -->
             /* Click -> switch data to collegesAfter data */
             d3.select("button")
                 .on("click", function () {
-                    var collegesAfter = [];
-                    for (var i = 0; i < data.length; i++) {
-                        collegesAfter.push([Number(data[i].MedianDebtonGraduation), Number(data[i].MedianEarnings8yearsAfterEntry)]);
+                    var title = d3.select("text.title")
+                    var collegesChange = [];
+
+                    if (title.text() == 'After') {
+                        for (var i = 0; i < data.length; i++) {
+                            collegesChange.push([Number(data[i].MedianFamilyIncome), Number(data[i].AverageCost)]);
+                        }
+                        title.text('Before')
+                    }
+                    else {
+                        for (var i = 0; i < data.length; i++) {
+                            collegesChange.push([Number(data[i].MedianDebtonGraduation), Number(data[i].MedianEarnings8yearsAfterEntry)]);
+                        }
+                        title.text('After')
                     }
                     //console.log(collegesAfter);
 
                     /* Update scaling */
-                    xScale.domain([0, d3.max(collegesAfter, function (d) {
+                    xScale.domain([0, d3.max(collegesChange, function (d) {
                         return d[0];
                     })]);
-                    yScale.domain([0, d3.max(collegesAfter, function (d) {
+                    yScale.domain([0, d3.max(collegesChange, function (d) {
                         return d[1];
                     })]);
 
                     /* Updating the points */
                     svg.selectAll("circle")
-                        .data(collegesAfter)  // Update with new data
+                        .data(collegesChange)  // Update with new data
                         .transition()  // Transition from old to new
                         .duration(1200)  // Length of animation
                         .each("start", function () {  // Start of animation
@@ -139,7 +157,7 @@ Anything else, feel free to message me! -->
                                 .attr("r", 8);  // Change size
                         })
                         .delay(function (d, i) {
-                            return i / collegesAfter.length * 900;  // adjust the delay per dot -- there's a slight delay b/n pts
+                            return i / collegesChange.length * 900;  // adjust the delay per dot -- there's a slight delay b/n pts
                         })
                         .ease("linear")  // Transition effects -> 'circle', 'elastic', 'bounce', 'linear'
                         .attr("cx", function (d) {

@@ -10,3 +10,8 @@
         font-family: sans-serif;
         font-size: 11px;
     }
+
+    .title text {
+        font-size: 18px;
+        font-weight: bold;
+    }
