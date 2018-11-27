@@ -124,7 +124,13 @@
                 .attr("r", 4)
                 .on("mouseover", function (d) {
                     div.transition()
-                        .duration(200)
+                        .duration(5)
+                        .style("background-color", function (i) {
+                            // console.log(d);
+                            if (d[3] == "Private")
+                                return "rgba(252, 119, 83,0.7)";
+                            return "rgba(102, 215, 209,0.7)";
+                        })
                         .style("opacity", .9);
                     div.html(d[2] + "<br/>")
                         .style("left", (d3.event.pageX) + "px")
