@@ -16,8 +16,7 @@
     <p>
         It is a mass common belief that an investment in higher education is a step towards a financially stable life,
         but it is without a doubt one of the largest financial endeavors a family can endure. That is why it is
-        important
-        for people to know which schools in America offer the highest return for their degree.<br>
+        important for people to know which schools in America offer the highest return for their degree.<br>
         <button id="toggle" onclick="changeButtonText()">Finances after Graduation</button> </br>
     </p>
 </header>
@@ -56,8 +55,10 @@
                 .style("opacity", 0);
             var collegesBefore = [];
             for (var i = 0; i < data.length; i++) {
-                collegesBefore.push([Number(data[i].MedianFamilyIncome), Number(data[i].AverageCost), data[i].Name, data[i].Control]);
+                collegesBefore.push([Number(data[i].MedianFamilyIncome), Number(data[i].AverageCost), data[i].Name, data[i].Control, Number(data[i].AdmissionRate), Number(data[i].UndergradPopulation),
+                Number(data[i].CompletionRate150time), Number(data[i].MedianDebtonWithdrawal), Number(data[i].NumberofUnemployed8yearsafterentry), Number(data[i].NumberofEmployed8yearsafterentry)]);
             }
+
 
             /* Setting up canvas */
             var canvasWidth = 1280;
@@ -140,7 +141,16 @@
                     div.transition()
                         .duration(500)
                         .style("opacity", 0);
-                });;  // adjust point size (radius)
+                })  // adjust point size (radius)
+                .on("click", function (d, i) {
+                    document.getElementById("collegeName").textContent = d[2];
+                    document.getElementById("admissionRate").textContent = d[4];
+                    document.getElementById("undergradPop").textContent = d[5];
+                    document.getElementById("compRate").textContent = d[6];
+                    document.getElementById("withdrawDebt").textContent = d[7];
+                    document.getElementById("unemployed8").textContent = d[8];
+                    document.getElementById("employed8").textContent = d[9];
+                });
 
 
             /* Adding to the Axis */
@@ -160,13 +170,15 @@
                     var collegesChange = [];
                     if (title.text() == 'The Fiscal Outcome of Attaining Your Degree') {
                         for (var i = 0; i < data.length; i++) {
-                            collegesChange.push([Number(data[i].MedianFamilyIncome), Number(data[i].AverageCost), data[i].Name, data[i].Control]);
+                            collegesChange.push([Number(data[i].MedianFamilyIncome), Number(data[i].AverageCost), data[i].Name, data[i].Control, Number(data[i].AdmissionRate), Number(data[i].UndergradPopulation),
+                            Number(data[i].CompletionRate150time), Number(data[i].MedianDebtonWithdrawal), Number(data[i].NumberofUnemployed8yearsafterentry), Number(data[i].NumberofEmployed8yearsafterentry)]);
                         }
                         title.text('The Price Paid by Families for Higher Education in the U.S.')
                     }
                     else {
                         for (var i = 0; i < data.length; i++) {
-                            collegesChange.push([Number(data[i].MedianDebtonGraduation), Number(data[i].MedianEarnings8yearsAfterEntry), data[i].Name, data[i].Control]);
+                            collegesChange.push([Number(data[i].MedianDebtonGraduation), Number(data[i].MedianEarnings8yearsAfterEntry), data[i].Name, data[i].Control, Number(data[i].AdmissionRate), Number(data[i].UndergradPopulation),
+                            Number(data[i].CompletionRate150time), Number(data[i].MedianDebtonWithdrawal), Number(data[i].NumberofUnemployed8yearsafterentry), Number(data[i].NumberofEmployed8yearsafterentry)]);
                         }
                         title.text('The Fiscal Outcome of Attaining Your Degree')
                     }
@@ -220,17 +232,19 @@
         })
     </script>
 
+    <h4 style="font-size: 22px"><span id="collegeName"></h4>
+
     <div id="rawdata">
         <div class="row">
             <div class="column">
-                <strong>Admission Rate: </strong> <span id="admissionRate"></span><br />
+                <strong>Admission Rate (%): </strong> <span id="admissionRate"></span><br />
                 <strong>Undergrad Population: </strong> <span id="undergradPop"></span><br />
             </div>
             <div class="column">
-                <strong>Completion Rate 150%: </strong> <span id="compRate"></span><br />
-                <strong>Median Debt on Withdrawal: </strong> <span id="withdrawDebt"></span><br />
+                <strong>Completion Rate (within 6yrs): </strong> <span id="compRate"></span><br />
+                <strong>Median Debt on Withdrawal ($): </strong> <span id="withdrawDebt"></span><br />
             </div>
-            <div class="column">
+            <div class="column2">
                 <strong>Number of Unemployed 8 years after entry: </strong> <span id="unemployed8"></span><br />
                 <strong>Number of Employed 8 years after entry: </strong> <span id="employed8"></span><br />
             </div>
