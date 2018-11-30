@@ -38,11 +38,12 @@
 
         </script>
 
-        <div id="legend">
-            <strong>Legend:</strong> <span style="color: rgba(252, 119, 83,1)">Private College</span> & <span style="color: rgba(102, 215, 209,1)">Public
-                College</span>
-        </div>
+        
         <svg id="svg1" width="1200" height="600" style="border: 1px solid #777;">
+            <div id="legend">
+            <strong>Legend:</strong> <span style="color: rgba(252, 119, 83,1)">Private College</span> & <span style="color: rgba(102, 215, 209,1)">Public
+                College</span> <text><span> & Undergrad Population Encoded by Size</span></text>
+            </div>
         </svg>
 
     </div>
@@ -63,7 +64,7 @@
             /* Setting up canvas */
             var canvasWidth = 1280;
             var canvasHeight = 600;
-            var padding = 60;
+            var padding = 100;
 
             /* Setting up scaling */
             var xScale = d3.scale.linear()
@@ -76,6 +77,14 @@
                     return d[1];  // input - 0 for x and 1 for y
                 })])
                 .range([canvasHeight - padding, padding]);  // y starts on top going down so we gotta flip
+
+            var sizeScale = d3.scale.linear()
+                .domain([d3.min(collegesBefore, function (d) {
+                    return d[5]
+                }), d3.max(collegesBefore, function(d) {
+                    return d[5]
+                })])
+                .range([2, 10])
 
             /* Setting up X and Y axis */
             var xAxis = d3.svg.axis()
@@ -98,6 +107,19 @@
                 .attr("text-anchor", "middle")
                 .attr("class", "title")
                 .text("The Price Paid by Families for Higher Education in the U.S.");
+            svg.append("text")
+                .attr("x", canvasWidth / 2)
+                .attr("y", canvasHeight - 20)
+                .attr("text-anchor", "middle")
+                .attr("class", "subtitlex")
+                .text("Median Family Income");
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("x",  -(canvasHeight)/2)
+                .attr("y", 20)
+                .attr("text-anchor", "middle")
+                .attr("class", "subtitley")
+                .text("Average Cost");
 
             /* Creating the point circles */
             svg.selectAll("circle")
@@ -122,7 +144,9 @@
                         return "rgba(252, 119, 83,1)";
                     return "rgba(102, 215, 209,1)";
                 })
-                .attr("r", 4)
+                .attr("r", function(d) {
+                    return sizeScale(d[5])
+                })
                 .on("mouseover", function (d) {
                     div.transition()
                         .duration(5)
@@ -167,6 +191,8 @@
             d3.select("button")
                 .on("click", function () {
                     var title = d3.select("text.title")
+                    var subtitlex = d3.select("text.subtitlex")
+                    var subtitley = d3.select("text.subtitley")
                     var collegesChange = [];
                     if (title.text() == 'The Fiscal Outcome of Attaining Your Degree') {
                         for (var i = 0; i < data.length; i++) {
@@ -174,6 +200,8 @@
                             Number(data[i].CompletionRate150time), Number(data[i].MedianDebtonWithdrawal), Number(data[i].NumberofUnemployed8yearsafterentry), Number(data[i].NumberofEmployed8yearsafterentry)]);
                         }
                         title.text('The Price Paid by Families for Higher Education in the U.S.')
+                        subtitlex.text('Median Family Income')
+                        subtitley.text('Average Cost')
                     }
                     else {
                         for (var i = 0; i < data.length; i++) {
@@ -181,6 +209,8 @@
                             Number(data[i].CompletionRate150time), Number(data[i].MedianDebtonWithdrawal), Number(data[i].NumberofUnemployed8yearsafterentry), Number(data[i].NumberofEmployed8yearsafterentry)]);
                         }
                         title.text('The Fiscal Outcome of Attaining Your Degree')
+                        subtitlex.text('Median Debt on Graduation')
+                        subtitley.text('Median Earnings 8 Years After Entry')
                     }
 
                     /* Update scaling */
@@ -216,7 +246,9 @@
                                 .transition()
                                 .duration(500)
                                 // .attr("fill", "black")  // Change color
-                                .attr("r", 4);  // Change radius
+                                .attr("r", function(d) {
+                                    return sizeScale(d[5])
+                                });  // Change radius
                         });
 
                     /* Updating Axis */

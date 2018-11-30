@@ -129,6 +129,13 @@
 
     /* Body Styling */
 
+    #legend {
+        margin-top: 5px;
+        /*border: 3px solid #403D58;*/
+        margin-left: 15px;
+        text-align: center;
+    }
+
     #main {
         text-align: center;
     }
