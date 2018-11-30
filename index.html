@@ -51,9 +51,11 @@
     <script type="text/javascript">
         d3.csv("data/colleges.csv", function (error, data) {
             if (error) throw error;
+
             var div = d3.select("body").append("div")
                 .attr("class", "tooltip")
                 .style("opacity", 0);
+
             var collegesBefore = [];
             for (var i = 0; i < data.length; i++) {
                 collegesBefore.push([Number(data[i].MedianFamilyIncome), Number(data[i].AverageCost), data[i].Name, data[i].Control, Number(data[i].AdmissionRate), Number(data[i].UndergradPopulation),
@@ -132,6 +134,7 @@
                 .attr("cy", function (d) {  // Circle's Y
                     return yScale(d[1]);
                 })
+
                 .attr("fill", function (d) {
                     // console.log(d);
                     if (d[3] == "Private")
@@ -139,6 +142,7 @@
                     return "rgba(102, 215, 209,0.3)";
                 })
                 .attr("stroke", function (d) {
+
                     // console.log(d);
                     if (d[3] == "Private")
                         return "rgba(252, 119, 83,1)";
@@ -147,6 +151,7 @@
                 .attr("r", function(d) {
                     return sizeScale(d[5])
                 })
+
                 .on("mouseover", function (d) {
                     div.transition()
                         .duration(5)
@@ -190,6 +195,7 @@
                 // .on("click", toggleColor);
 
 
+
             /* Adding to the Axis */
             svg.append("g")
                 .attr("class", "x axis")
@@ -209,8 +215,10 @@
                     var collegesChange = [];
                     if (title.text() == 'The Fiscal Outcome of Attaining Your Degree') {
                         for (var i = 0; i < data.length; i++) {
+
                             collegesChange.push([Number(data[i].MedianFamilyIncome), Number(data[i].AverageCost), data[i].Name, data[i].Control, Number(data[i].AdmissionRate), Number(data[i].UndergradPopulation),
                             Number(data[i].CompletionRate150time), Number(data[i].MedianDebtonWithdrawal), Number(data[i].NumberofUnemployed8yearsafterentry), Number(data[i].NumberofEmployed8yearsafterentry)]);
+
                         }
                         title.text('The Price Paid by Families for Higher Education in the U.S.')
                         subtitlex.text('Median Family Income')
@@ -218,8 +226,10 @@
                     }
                     else {
                         for (var i = 0; i < data.length; i++) {
+
                             collegesChange.push([Number(data[i].MedianDebtonGraduation), Number(data[i].MedianEarnings8yearsAfterEntry), data[i].Name, data[i].Control, Number(data[i].AdmissionRate), Number(data[i].UndergradPopulation),
                             Number(data[i].CompletionRate150time), Number(data[i].MedianDebtonWithdrawal), Number(data[i].NumberofUnemployed8yearsafterentry), Number(data[i].NumberofEmployed8yearsafterentry)]);
+
                         }
                         title.text('The Fiscal Outcome of Attaining Your Degree')
                         subtitlex.text('Median Debt on Graduation')
@@ -259,9 +269,11 @@
                                 .transition()
                                 .duration(500)
                                 // .attr("fill", "black")  // Change color
+
                                 .attr("r", function(d) {
                                     return sizeScale(d[5])
                                 });  // Change radius
+
                         });
 
                     /* Updating Axis */
