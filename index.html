@@ -1,57 +1,72 @@
 <!DOCTYPE html>
 
-<!-- NEEDS WORK:
-- the dots switch from before to after but it can only be switched once (try it so you can see) *Solved
-- the graph needs a title *Solved, axis needs labels *Still needs work
-- turned out to be simpler than I thought it would be so if you want to add something to make it more complex feel free to
-    - maybe some data appears when you click a point
-    - or brushing and linking with some other quick and simple graph
-    - etc. 
-
-NOTES:
-- When you load the page it will be the BEFORE graph
-- BEFORE graph is xaxis -> MedianFamilyIncome || yaxis-> AverageCost
-- AFTER graph is xaxis -> MedianDebtonGraduation || yaxis -> MedianEarnings8yearsAfterEntry
-- Points are light shade of blue (that way if they stack it appears more opaque)
-- Points' outline is GREEN if its private school, BLUE if its public
-- If you have any other ideas in terms of coloring feel free to explore that 
-
-Anything else, feel free to message me! -->
-
 <html>
 
 <head>
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <!-- <script type="text/javascript" src="./js/main.js"></script> -->
     <link rel="stylesheet" href="./css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
 </head>
 
+<header>
+    <h1> Investing Into Your Education </h1>
+    <h4> Allan Serna & Pranov Duggasani </h4>
+
+    <p>
+        It is a mass common belief that an investment in higher education is a step towards a financially stable life,
+        but it is without a doubt one of the largest financial endeavors a family can endure. That is why it is
+        important for people to know which schools in America offer the highest return for their degree.<br>
+        <button id="toggle" onclick="changeButtonText()">Finances after Graduation</button> </br>
+    </p>
+</header>
+
 <body>
-    <button>Before/After Switch</button>
 
     <div id="main">
+
+        <script>
+
+            function changeButtonText() {
+                var change = document.getElementById("toggle");
+                if (change.innerHTML == "Finances after Graduation") {
+                    change.innerHTML = "Finances before attending College";
+                } else {
+                    change.innerHTML = "Finances after Graduation";
+                }
+            }
+
+        </script>
+
+        
         <svg id="svg1" width="1200" height="600" style="border: 1px solid #777;">
+            <div id="legend">
+            <strong>Legend:</strong> <span style="color: rgba(252, 119, 83,1)">Private College</span> & <span style="color: rgba(102, 215, 209,1)">Public
+                College</span> <text><span> & Undergrad Population Encoded by Size</span></text>
+            </div>
         </svg>
+
     </div>
 
     <script type="text/javascript">
-
         d3.csv("data/colleges.csv", function (error, data) {
             if (error) throw error;
-            var div = d3.select("body").append("div")   
-                .attr("class", "tooltip")               
+
+            var div = d3.select("body").append("div")
+                .attr("class", "tooltip")
                 .style("opacity", 0);
 
             var collegesBefore = [];
             for (var i = 0; i < data.length; i++) {
-                collegesBefore.push([Number(data[i].MedianFamilyIncome), Number(data[i].AverageCost), data[i].Name, data[i].Control]);
+                collegesBefore.push([Number(data[i].MedianFamilyIncome), Number(data[i].AverageCost), data[i].Name, data[i].Control, Number(data[i].AdmissionRate), Number(data[i].UndergradPopulation),
+                Number(data[i].CompletionRate150time), Number(data[i].MedianDebtonWithdrawal), Number(data[i].NumberofUnemployed8yearsafterentry), Number(data[i].NumberofEmployed8yearsafterentry)]);
             }
-            //console.log(collegesBefore);
+
 
             /* Setting up canvas */
-            var canvasWidth = 1200;
+            var canvasWidth = 1280;
             var canvasHeight = 600;
-            var padding = 60;
+            var padding = 100;
 
             /* Setting up scaling */
             var xScale = d3.scale.linear()
@@ -59,19 +74,25 @@ Anything else, feel free to message me! -->
                     return d[0];  // input - 0 for x and 1 for y
                 })])
                 .range([padding, canvasWidth - padding * 2]); // output range
-
             var yScale = d3.scale.linear()
                 .domain([0, d3.max(collegesBefore, function (d) {
                     return d[1];  // input - 0 for x and 1 for y
                 })])
                 .range([canvasHeight - padding, padding]);  // y starts on top going down so we gotta flip
 
+            var sizeScale = d3.scale.linear()
+                .domain([d3.min(collegesBefore, function (d) {
+                    return d[5]
+                }), d3.max(collegesBefore, function(d) {
+                    return d[5]
+                })])
+                .range([2, 10])
+
             /* Setting up X and Y axis */
             var xAxis = d3.svg.axis()
                 .scale(xScale)
                 .orient("bottom")
                 .ticks(10);
-
             var yAxis = d3.svg.axis()
                 .scale(yScale)
                 .orient("left")
@@ -82,13 +103,25 @@ Anything else, feel free to message me! -->
                 .append("svg")
                 .attr("width", canvasWidth)
                 .attr("height", canvasHeight)
-
             svg.append("text")
-                .attr("x", canvasWidth / 2)             
+                .attr("x", canvasWidth / 2)
                 .attr("y", 20)
                 .attr("text-anchor", "middle")
-                .attr("class", "title")   
-                .text("Before");
+                .attr("class", "title")
+                .text("The Price Paid by Families for Higher Education in the U.S.");
+            svg.append("text")
+                .attr("x", canvasWidth / 2)
+                .attr("y", canvasHeight - 20)
+                .attr("text-anchor", "middle")
+                .attr("class", "subtitlex")
+                .text("Median Family Income");
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("x",  -(canvasHeight)/2)
+                .attr("y", 20)
+                .attr("text-anchor", "middle")
+                .attr("class", "subtitley")
+                .text("Average Cost");
 
             /* Creating the point circles */
             svg.selectAll("circle")
@@ -101,40 +134,73 @@ Anything else, feel free to message me! -->
                 .attr("cy", function (d) {  // Circle's Y
                     return yScale(d[1]);
                 })
-                // .attr("fill", "rgba(127, 179, 213,0.3)")
+
                 .attr("fill", function (d) {
                     // console.log(d);
                     if (d[3] == "Private")
-                        return "rgba(0,255,0,0.3)";
-                    return "rgba(0,0,255,0.3)";
+                        return "rgba(252, 119, 83,0.3)";
+                    return "rgba(102, 215, 209,0.3)";
                 })
                 .attr("stroke", function (d) {
+
                     // console.log(d);
                     if (d[3] == "Private")
-                        return "rgba(0,255,0,1)";
-                    return "rgba(0,0,255,1)";
+                        return "rgba(252, 119, 83,1)";
+                    return "rgba(102, 215, 209,1)";
                 })
-                .attr("r", 4)
-                .on("mouseover", function(d) {      
-                    div.transition()        
-                        .duration(200)      
-                        .style("opacity", .9);      
-                    div .html(d[2] + "<br/>")  
-                        .style("left", (d3.event.pageX) + "px")     
-                        .style("top", (d3.event.pageY - div.node().getBoundingClientRect().height) + "px");    
-                })                  
-        .on("mouseout", function(d) {       
-            div.transition()        
-                .duration(500)      
-                .style("opacity", 0);   
-        });;  // adjust point size (radius)
+                .attr("r", function(d) {
+                    return sizeScale(d[5])
+                })
+
+                .on("mouseover", function (d) {
+                    div.transition()
+                        .duration(5)
+                        .style("background-color", function (i) {
+                            // console.log(d);
+                            if (d[3] == "Private")
+                                return "rgba(252, 119, 83,0.9)";
+                            return "rgba(102, 215, 209,0.9)";
+                        })
+                        .style("opacity", .9);
+                    div.html(d[2] + "<br/>")
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - div.node().getBoundingClientRect().height) + "px");
+                })
+                .on("mouseout", function (d) {
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                })  // adjust point size (radius)
+                .on("click", function (d, i) {
+                    // this.toggleColor()
+                    d3.selectAll("circle")
+                        .style("fill", function() {
+                            if (d3.select(this).attr("stroke") =="rgba(252, 119, 83,1)") {
+                                return "rgba(252, 119, 83,0.3)"
+                            } else {
+                                return "rgba(102, 215, 209,0.3)"
+                            }
+                            
+                        });
+                        // .style("opacity", .9);
+                    d3.select(this).style("fill", 'green');
+                    document.getElementById("collegeName").textContent = d[2];
+                    document.getElementById("admissionRate").textContent = d[4];
+                    document.getElementById("undergradPop").textContent = d[5];
+                    document.getElementById("compRate").textContent = d[6];
+                    document.getElementById("withdrawDebt").textContent = d[7];
+                    document.getElementById("unemployed8").textContent = d[8];
+                    document.getElementById("employed8").textContent = d[9];
+                });
+                // .on("click", toggleColor);
+
+
 
             /* Adding to the Axis */
             svg.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + (canvasHeight - padding) + ")")
                 .call(xAxis);
-
             svg.append("g")
                 .attr("class", "y axis")
                 .attr("transform", "translate(" + padding + ",0)")
@@ -144,21 +210,31 @@ Anything else, feel free to message me! -->
             d3.select("button")
                 .on("click", function () {
                     var title = d3.select("text.title")
+                    var subtitlex = d3.select("text.subtitlex")
+                    var subtitley = d3.select("text.subtitley")
                     var collegesChange = [];
-
-                    if (title.text() == 'After') {
+                    if (title.text() == 'The Fiscal Outcome of Attaining Your Degree') {
                         for (var i = 0; i < data.length; i++) {
-                            collegesChange.push([Number(data[i].MedianFamilyIncome), Number(data[i].AverageCost),data[i].Name, data[i].Control]);
+
+                            collegesChange.push([Number(data[i].MedianFamilyIncome), Number(data[i].AverageCost), data[i].Name, data[i].Control, Number(data[i].AdmissionRate), Number(data[i].UndergradPopulation),
+                            Number(data[i].CompletionRate150time), Number(data[i].MedianDebtonWithdrawal), Number(data[i].NumberofUnemployed8yearsafterentry), Number(data[i].NumberofEmployed8yearsafterentry)]);
+
                         }
-                        title.text('Before')
+                        title.text('The Price Paid by Families for Higher Education in the U.S.')
+                        subtitlex.text('Median Family Income')
+                        subtitley.text('Average Cost')
                     }
                     else {
                         for (var i = 0; i < data.length; i++) {
-                            collegesChange.push([Number(data[i].MedianDebtonGraduation), Number(data[i].MedianEarnings8yearsAfterEntry),data[i].Name, data[i].Control] );
+
+                            collegesChange.push([Number(data[i].MedianDebtonGraduation), Number(data[i].MedianEarnings8yearsAfterEntry), data[i].Name, data[i].Control, Number(data[i].AdmissionRate), Number(data[i].UndergradPopulation),
+                            Number(data[i].CompletionRate150time), Number(data[i].MedianDebtonWithdrawal), Number(data[i].NumberofUnemployed8yearsafterentry), Number(data[i].NumberofEmployed8yearsafterentry)]);
+
                         }
-                        title.text('After')
+                        title.text('The Fiscal Outcome of Attaining Your Degree')
+                        subtitlex.text('Median Debt on Graduation')
+                        subtitley.text('Median Earnings 8 Years After Entry')
                     }
-                    //console.log(collegesAfter);
 
                     /* Update scaling */
                     xScale.domain([0, d3.max(collegesChange, function (d) {
@@ -193,23 +269,44 @@ Anything else, feel free to message me! -->
                                 .transition()
                                 .duration(500)
                                 // .attr("fill", "black")  // Change color
-                                .attr("r", 4);  // Change radius
+
+                                .attr("r", function(d) {
+                                    return sizeScale(d[5])
+                                });  // Change radius
+
                         });
 
                     /* Updating Axis */
                     svg.select(".x.axis")
                         .transition()
-                        .duration(1000)
+                        .duration(1700)
                         .call(xAxis);
-
                     svg.select(".y.axis")
                         .transition()
-                        .duration(100)
+                        .duration(700)
                         .call(yAxis);
                 });
         })
-
     </script>
+
+    <h4 style="font-size: 22px"><span id="collegeName"></h4>
+
+    <div id="rawdata">
+        <div class="row">
+            <div class="column">
+                <strong>Admission Rate (%): </strong> <span id="admissionRate"></span><br />
+                <strong>Undergrad Population: </strong> <span id="undergradPop"></span><br />
+            </div>
+            <div class="column">
+                <strong>Completion Rate (within 6yrs): </strong> <span id="compRate"></span><br />
+                <strong>Median Debt on Withdrawal ($): </strong> <span id="withdrawDebt"></span><br />
+            </div>
+            <div class="column2">
+                <strong>Number of Unemployed 8 years after entry: </strong> <span id="unemployed8"></span><br />
+                <strong>Number of Employed 8 years after entry: </strong> <span id="employed8"></span><br />
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
