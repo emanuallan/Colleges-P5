@@ -38,11 +38,11 @@
 
         </script>
 
-        
+
         <svg id="svg1" width="1200" height="600" style="border: 1px solid #777;">
             <div id="legend">
-            <strong>Legend:</strong> <span style="color: rgba(252, 119, 83,1)">Private College</span> & <span style="color: rgba(102, 215, 209,1)">Public
-                College</span> <text><span> & Undergrad Population Encoded by Size</span></text>
+                <strong>Legend:</strong> <span style="color: rgba(252, 119, 83,1)">Private College</span> & <span style="color: rgba(102, 215, 209,1)">Public
+                    College</span> <text><span> & Undergrad Population Encoded by Size</span></text>
             </div>
         </svg>
 
@@ -83,7 +83,7 @@
             var sizeScale = d3.scale.linear()
                 .domain([d3.min(collegesBefore, function (d) {
                     return d[5]
-                }), d3.max(collegesBefore, function(d) {
+                }), d3.max(collegesBefore, function (d) {
                     return d[5]
                 })])
                 .range([2, 10])
@@ -117,7 +117,7 @@
                 .text("Median Family Income");
             svg.append("text")
                 .attr("transform", "rotate(-90)")
-                .attr("x",  -(canvasHeight)/2)
+                .attr("x", -(canvasHeight) / 2)
                 .attr("y", 20)
                 .attr("text-anchor", "middle")
                 .attr("class", "subtitley")
@@ -148,7 +148,7 @@
                         return "rgba(252, 119, 83,1)";
                     return "rgba(102, 215, 209,1)";
                 })
-                .attr("r", function(d) {
+                .attr("r", function (d) {
                     return sizeScale(d[5])
                 })
 
@@ -174,16 +174,16 @@
                 .on("click", function (d, i) {
                     // this.toggleColor()
                     d3.selectAll("circle")
-                        .style("fill", function() {
-                            if (d3.select(this).attr("stroke") =="rgba(252, 119, 83,1)") {
+                        .style("fill", function () {
+                            if (d3.select(this).attr("stroke") == "rgba(252, 119, 83,1)") {
                                 return "rgba(252, 119, 83,0.3)"
                             } else {
                                 return "rgba(102, 215, 209,0.3)"
                             }
-                            
+
                         });
-                        // .style("opacity", .9);
-                    d3.select(this).style("fill", 'green');
+                    // .style("opacity", .9);
+                    d3.select(this).style("fill", '#AFA2FF');
                     document.getElementById("collegeName").textContent = d[2];
                     document.getElementById("admissionRate").textContent = d[4];
                     document.getElementById("undergradPop").textContent = d[5];
@@ -192,7 +192,7 @@
                     document.getElementById("unemployed8").textContent = d[8];
                     document.getElementById("employed8").textContent = d[9];
                 });
-                // .on("click", toggleColor);
+            // .on("click", toggleColor);
 
 
 
@@ -270,7 +270,7 @@
                                 .duration(500)
                                 // .attr("fill", "black")  // Change color
 
-                                .attr("r", function(d) {
+                                .attr("r", function (d) {
                                     return sizeScale(d[5])
                                 });  // Change radius
 
