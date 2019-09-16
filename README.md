@@ -1,5 +1,5 @@
 <div align="center">
-<a href="https://ibb.co/Y8ZzMsP"><img src="https://aeserna.com/img/vis.png" alt="Screen-Shot-2019-07-31-at-11-14-15-AM" border="0"></a>
+<img src="https://aeserna.com/img/vis.png" alt="Screen-Shot-2019-07-31-at-11-14-15-AM" border="0">
 </div>
 
 <h1 align="center">Investing Into Your Education</h1>
