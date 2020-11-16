@@ -7,7 +7,7 @@
 
 <div align="center">
 D3 based Information Visualization of college data that compares the monetary standing of students before and after college.
-  <br/>LIVE DEMO: https://aeserna.com/vis.html
+  <br/>(LIVE DEMO)[https://emanuallan.github.io/vis.html]
 </div>
 
 ## 🍭 Characteristics
